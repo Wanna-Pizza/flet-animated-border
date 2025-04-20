@@ -1,0 +1,7 @@
+site_name: FletAnimatedBorder
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings

@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/flet_animated_border/__init__.py
+src/flet_animated_border/flet_animated_border.py
+src/flet_animated_border.egg-info/PKG-INFO
+src/flet_animated_border.egg-info/SOURCES.txt
+src/flet_animated_border.egg-info/dependency_links.txt
+src/flet_animated_border.egg-info/requires.txt
+src/flet_animated_border.egg-info/top_level.txt
+src/flutter/flet_animated_border/CHANGELOG.md
+src/flutter/flet_animated_border/LICENSE
+src/flutter/flet_animated_border/README.md
+src/flutter/flet_animated_border/pubspec.lock
+src/flutter/flet_animated_border/pubspec.yaml
+src/flutter/flet_animated_border/lib/flet_animated_border.dart
+src/flutter/flet_animated_border/lib/src/create_control.dart
+src/flutter/flet_animated_border/lib/src/flet_animated_border.dart

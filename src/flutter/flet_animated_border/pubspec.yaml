@@ -1,0 +1,22 @@
+name: flet_animated_border
+description: Flet FletAnimatedBorder control
+repository: https://github.com/MyGithubAccount/flet-animated-border/src/flutter/flet_animated_border
+version: 0.1.0
+homepage: https://github.com/MyGithubAccount/flet-animated-border
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flet: 0.27.6
+  flutter:
+    sdk: flutter
+  zo_animated_border: ^0.0.6
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  
