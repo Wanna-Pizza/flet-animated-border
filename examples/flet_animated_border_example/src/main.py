@@ -55,18 +55,15 @@ def main(page: ft.Page):
     
     def switch_color(e):
         
-        # List of available colors from flet.Colors
         color_list = [
             ft.colors.RED, ft.colors.GREEN, ft.colors.BLUE, ft.colors.YELLOW,
             ft.colors.PURPLE, ft.colors.ORANGE, ft.colors.PINK, ft.colors.CYAN,
             ft.colors.AMBER, ft.colors.TEAL, ft.colors.INDIGO, ft.colors.LIME
         ]
         
-        # Select two random colors
         border_anim.firstDualColor = random.choice(color_list)
         border_anim.secondDualColor = random.choice(color_list)
         
-        # Also update gradient colors
         border_anim.gradient_colors = random.sample(color_list, min(4, len(color_list)))
         
         border_anim.update()
