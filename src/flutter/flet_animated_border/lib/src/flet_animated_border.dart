@@ -102,19 +102,6 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
     _controller.forward();
   }
 
-  void _initializeAnimationsWithCurrentValues(
-      double targetWidth,
-      double targetRadius,
-      Color firstColor,
-      Color secondColor,
-      Color trackColor) {
-    _borderWidthAnim = AlwaysStoppedAnimation<double>(targetWidth);
-    _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetRadius);
-    _firstDualColorAnim = AlwaysStoppedAnimation<Color?>(firstColor);
-    _secondDualColorAnim = AlwaysStoppedAnimation<Color?>(secondColor);
-    _trackDualColorAnim = AlwaysStoppedAnimation<Color?>(trackColor);
-  }
-
   @override
   Widget build(BuildContext context) {
     debugPrint("AnimatedBorder build: ${widget.control.id}");
@@ -170,45 +157,50 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
             _prevTrackDualColor != targetTrackDualColor ||
             true);
 
-    if (_isFirstBuild || hasChanges) {
-      // Update previous values regardless of animation state
+    if (_isFirstBuild) {
+      _prevBorderWidth = targetBorderWidth;
+      _prevBorderRadius = targetBorderRadius;
+      _prevFirstDualColor = targetFirstDualColor;
+      _prevSecondDualColor = targetSecondDualColor;
+      _prevTrackDualColor = targetTrackDualColor;
+      _isFirstBuild = false;
+
+      _borderWidthAnim = AlwaysStoppedAnimation<double>(targetBorderWidth);
+      _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetBorderRadius);
+      _firstDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetFirstDualColor);
+      _secondDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetSecondDualColor);
+      _trackDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetTrackDualColor);
+    } else if (hasChanges && animation != null) {
+      debugPrint("Starting animation for properties and colors");
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _setupAndStartAnimations(
+            targetBorderWidth,
+            targetBorderRadius,
+            targetFirstDualColor,
+            targetSecondDualColor,
+            targetTrackDualColor,
+            animDuration,
+            animCurve);
+      });
+    } else if (hasChanges) {
       _prevBorderWidth = targetBorderWidth;
       _prevBorderRadius = targetBorderRadius;
       _prevFirstDualColor = targetFirstDualColor;
       _prevSecondDualColor = targetSecondDualColor;
       _prevTrackDualColor = targetTrackDualColor;
 
-      if (_isFirstBuild) {
-        _isFirstBuild = false;
-        // Initialize animations with current values without transitions
-        _initializeAnimationsWithCurrentValues(
-            targetBorderWidth,
-            targetBorderRadius,
-            targetFirstDualColor,
-            targetSecondDualColor,
-            targetTrackDualColor);
-      } else if (animation != null) {
-        // Animate to new values
-        debugPrint("Starting animation for properties and colors");
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _setupAndStartAnimations(
-              targetBorderWidth,
-              targetBorderRadius,
-              targetFirstDualColor,
-              targetSecondDualColor,
-              targetTrackDualColor,
-              animDuration,
-              animCurve);
-        });
-      } else {
-        // Update values without animation
-        _initializeAnimationsWithCurrentValues(
-            targetBorderWidth,
-            targetBorderRadius,
-            targetFirstDualColor,
-            targetSecondDualColor,
-            targetTrackDualColor);
-      }
+      _borderWidthAnim = AlwaysStoppedAnimation<double>(targetBorderWidth);
+      _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetBorderRadius);
+      _firstDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetFirstDualColor);
+      _secondDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetSecondDualColor);
+      _trackDualColorAnim =
+          AlwaysStoppedAnimation<Color?>(targetTrackDualColor);
     }
 
     var contentCtrls =
