@@ -4,9 +4,9 @@ Version: 0.1.0
 Summary: FletAnimatedBorder control for Flet
 Author-email: Flet contributors <you@example.com>
 Project-URL: Homepage, https://mydomain.dev
-Project-URL: Documentation, https://github.com/MyGithubAccount/flet-animated-border
-Project-URL: Repository, https://github.com/MyGithubAccount/flet-animated-border
-Project-URL: Issues, https://github.com/MyGithubAccount/flet-animated-border/issues
+Project-URL: Documentation, https://github.com/Wanna-Pizza/flet-animated-border
+Project-URL: Repository, https://github.com/Wanna-Pizza/flet-animated-border
+Project-URL: Issues, https://github.com/Wanna-Pizza/flet-animated-border/issues
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
 Requires-Dist: flet>=0.27.6
@@ -24,7 +24,7 @@ Link to git repository:
 
 ```
 dependencies = [
-  "flet-animated-border @ git+https://github.com/MyGithubAccount/flet-animated-border",
+  "flet-animated-border @ git+https://github.com/Wanna-Pizza/flet-animated-border",
   "flet>=0.27.6",
 ]
 ```
@@ -47,4 +47,4 @@ flet build macos -v
 
 ## Documentation
 
-[Link to documentation](https://MyGithubAccount.github.io/flet-animated-border/)
+[Link to documentation](https://Wanna-Pizza.github.io/flet-animated-border/)

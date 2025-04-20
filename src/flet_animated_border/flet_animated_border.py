@@ -6,15 +6,18 @@ from flet.core.control import Control, OptionalNumber
 from flet.core.animation import AnimationValue
 from flet.core.gradients import Gradient
 
-
-class FletBorderType(Enum):
+from flet.core.types import (
+    ColorEnums,
+    ColorValue,
+)
+class BorderType(Enum):
     DUAL = "dual"
     SOFT_GRADIENT = "soft_gradient"
 
 
-class FletAnimatedBorder(ConstrainedControl):
+class AnimatedBorder(ConstrainedControl):
     """
-    FletAnimatedBorder Control description.
+    AnimatedBorder Control description.
     """
 
     def __init__(
@@ -43,7 +46,7 @@ class FletAnimatedBorder(ConstrainedControl):
         firstDualColor: Optional[str] = "yellow",
         secondDualColor: Optional[str] = "orange",
         trackDualColor: Optional[str] = "transparent",
-        border_type: Optional[FletBorderType] = FletBorderType.DUAL,
+        border_type: Optional[BorderType] = BorderType.DUAL,
         gradient_colors: Optional[List[str]] = None,
         smooth_gradient_loop: Optional[bool] = True,
         duration_seconds: Optional[int] = 3,
@@ -103,9 +106,6 @@ class FletAnimatedBorder(ConstrainedControl):
         self._set_attr_json("duration_seconds", self._duration_seconds)
         self._set_attr_json("animate", self._animate)
         self._set_attr("onAnimationEnd", True if self._on_animation_end is not None else None)
-        self._set_attr("firstDualColor", self._first_dual_color)
-        self._set_attr("secondDualColor", self._second_dual_color)
-        self._set_attr("trackDualColor", self._track_dual_color)
         self._set_attr("borderType", self._border_type.value if self._border_type else None)
         self._set_attr("smoothGradientLoop", self._smooth_gradient_loop)
         
@@ -201,10 +201,9 @@ class FletAnimatedBorder(ConstrainedControl):
         return self._first_dual_color
     
     @firstDualColor.setter
-    def firstDualColor(self, value):
-        print(f"Setting firstDualColor to {value}")
+    def firstDualColor(self, value: Optional[ColorValue]):
         self._first_dual_color = value
-        self._set_attr("firstDualColor", value)
+        self._set_enum_attr("firstDualColor", value, ColorEnums)
         
     # secondDualColor
     @property
@@ -212,10 +211,9 @@ class FletAnimatedBorder(ConstrainedControl):
         return self._second_dual_color
     
     @secondDualColor.setter
-    def secondDualColor(self, value):
-        print(f"Setting secondDualColor to {value}")
+    def secondDualColor(self, value: Optional[ColorValue]):
         self._second_dual_color = value
-        self._set_attr("secondDualColor", value)
+        self._set_enum_attr("secondDualColor", value, ColorEnums)
         
     # trackDualColor
     @property
@@ -223,18 +221,17 @@ class FletAnimatedBorder(ConstrainedControl):
         return self._track_dual_color
     
     @trackDualColor.setter
-    def trackDualColor(self, value):
-        print(f"Setting trackDualColor to {value}")
+    def trackDualColor(self, value: Optional[ColorValue]):
         self._track_dual_color = value
-        self._set_attr("trackDualColor", value)
+        self._set_enum_attr("trackDualColor", value, ColorEnums)
         
     # border_type
     @property
-    def border_type(self) -> Optional[FletBorderType]:
+    def border_type(self) -> Optional[BorderType]:
         return self._border_type
     
     @border_type.setter
-    def border_type(self, value: Optional[FletBorderType]):
+    def border_type(self, value: Optional[BorderType]):
         print(f"Setting border_type to {value}")
         self._border_type = value
         

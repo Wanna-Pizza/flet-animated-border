@@ -1,18 +1,19 @@
 import flet as ft
 
-from flet_animated_border import FletAnimatedBorder,FletBorderType
+from flet_animated_border import AnimatedBorder,BorderType
+import random
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
-    border_anim = FletAnimatedBorder(
+    border_anim = AnimatedBorder(
         borderRadius=10,
         borderWidth=5,
         glowOpacity=0.6,
-        border_type=FletBorderType.DUAL,
-        firstDualColor=ft.Colors.WHITE,
-        secondDualColor=ft.Colors.YELLOW,
+        border_type=BorderType.DUAL,
+        firstDualColor=ft.Colors.RED,
+        secondDualColor=ft.Colors.GREEN,
         gradient_colors=[
             ft.Colors.RED,
             ft.Colors.YELLOW,
@@ -25,8 +26,6 @@ def main(page: ft.Page):
         animate=ft.Animation(1000, ft.AnimationCurve.EASE_IN_OUT),
     )
     
-    button = ft.ElevatedButton("123 граница", width=200, height=50)
-    border_anim.content = button
     
     page.add(ft.Container(
         border_anim,
@@ -47,11 +46,29 @@ def main(page: ft.Page):
         border_anim.update()
     
     def switch_to_soft_gradient(e):
-        border_anim.border_type = FletBorderType.SOFT_GRADIENT
+        border_anim.border_type = BorderType.SOFT_GRADIENT
         border_anim.update()
     
     def switch_to_dual_gradient(e):
-        border_anim.border_type = FletBorderType.DUAL
+        border_anim.border_type = BorderType.DUAL
+        border_anim.update()
+    
+    def switch_color(e):
+        
+        # List of available colors from flet.Colors
+        color_list = [
+            ft.colors.RED, ft.colors.GREEN, ft.colors.BLUE, ft.colors.YELLOW,
+            ft.colors.PURPLE, ft.colors.ORANGE, ft.colors.PINK, ft.colors.CYAN,
+            ft.colors.AMBER, ft.colors.TEAL, ft.colors.INDIGO, ft.colors.LIME
+        ]
+        
+        # Select two random colors
+        border_anim.firstDualColor = random.choice(color_list)
+        border_anim.secondDualColor = random.choice(color_list)
+        
+        # Also update gradient colors
+        border_anim.gradient_colors = random.sample(color_list, min(4, len(color_list)))
+        
         border_anim.update()
 
 
@@ -86,6 +103,7 @@ def main(page: ft.Page):
             ft.Column([
                 ft.ElevatedButton("Switch to Soft Gradient", on_click=switch_to_soft_gradient),
                 ft.ElevatedButton("Switch to Dual", on_click=switch_to_dual_gradient),
+                ft.ElevatedButton("Switch Color", on_click=switch_color),
             ])
             
             

@@ -30,9 +30,17 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
   double _prevBorderRadius = 10.0;
   bool _isFirstBuild = true;
 
+  Color _prevFirstDualColor = Colors.blue;
+  Color _prevSecondDualColor = Colors.red;
+  Color _prevTrackDualColor = Colors.grey;
+
   late AnimationController _controller;
   late Animation<double> _borderWidthAnim;
   late Animation<double> _borderRadiusAnim;
+
+  late Animation<Color?> _firstDualColorAnim;
+  late Animation<Color?> _secondDualColorAnim;
+  late Animation<Color?> _trackDualColorAnim;
 
   @override
   void initState() {
@@ -51,7 +59,13 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
   }
 
   void _setupAndStartAnimations(
-      double targetWidth, double targetRadius, Duration duration, Curve curve) {
+      double targetWidth,
+      double targetRadius,
+      Color firstColor,
+      Color secondColor,
+      Color trackColor,
+      Duration duration,
+      Curve curve) {
     _borderWidthAnim = Tween<double>(
       begin: _prevBorderWidth,
       end: targetWidth,
@@ -62,12 +76,43 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
       end: targetRadius,
     ).animate(CurvedAnimation(parent: _controller, curve: curve));
 
+    _firstDualColorAnim = ColorTween(
+      begin: _prevFirstDualColor,
+      end: firstColor,
+    ).animate(CurvedAnimation(parent: _controller, curve: curve));
+
+    _secondDualColorAnim = ColorTween(
+      begin: _prevSecondDualColor,
+      end: secondColor,
+    ).animate(CurvedAnimation(parent: _controller, curve: curve));
+
+    _trackDualColorAnim = ColorTween(
+      begin: _prevTrackDualColor,
+      end: trackColor,
+    ).animate(CurvedAnimation(parent: _controller, curve: curve));
+
     _prevBorderWidth = targetWidth;
     _prevBorderRadius = targetRadius;
+    _prevFirstDualColor = firstColor;
+    _prevSecondDualColor = secondColor;
+    _prevTrackDualColor = trackColor;
 
     _controller.reset();
     _controller.duration = duration;
     _controller.forward();
+  }
+
+  void _initializeAnimationsWithCurrentValues(
+      double targetWidth,
+      double targetRadius,
+      Color firstColor,
+      Color secondColor,
+      Color trackColor) {
+    _borderWidthAnim = AlwaysStoppedAnimation<double>(targetWidth);
+    _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetRadius);
+    _firstDualColorAnim = AlwaysStoppedAnimation<Color?>(firstColor);
+    _secondDualColorAnim = AlwaysStoppedAnimation<Color?>(secondColor);
+    _trackDualColorAnim = AlwaysStoppedAnimation<Color?>(trackColor);
   }
 
   @override
@@ -85,10 +130,15 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
     final smoothGradientLoop =
         widget.control.attrBool("smoothGradientLoop", true)!;
 
-    // Extract gradient colors directly from the 'gradientColors' attribute
+    final targetFirstDualColor =
+        widget.control.attrColor("firstDualColor", context) ?? Colors.blue;
+    final targetSecondDualColor =
+        widget.control.attrColor("secondDualColor", context) ?? Colors.red;
+    final targetTrackDualColor =
+        widget.control.attrColor("trackDualColor", context) ?? Colors.grey;
+
     List<Color> gradientColors = [];
 
-    // Try to get gradient colors list directly
     final gradientColorsJson = widget.control.attrList("gradientColors");
     if (gradientColorsJson != null) {
       gradientColors = gradientColorsJson
@@ -97,8 +147,6 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
               Colors.white)
           .toList();
     }
-
-    // If no gradient colors provided, use dual colors as fallback
 
     var animation = parseAnimation(widget.control, "animate");
     final animDuration =
@@ -117,29 +165,50 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
     bool hasChanges = !_isFirstBuild &&
         (_prevBorderWidth != targetBorderWidth ||
             _prevBorderRadius != targetBorderRadius ||
-            // Force rebuild when colors change to ensure they update properly
+            _prevFirstDualColor != targetFirstDualColor ||
+            _prevSecondDualColor != targetSecondDualColor ||
+            _prevTrackDualColor != targetTrackDualColor ||
             true);
 
-    if (_isFirstBuild) {
+    if (_isFirstBuild || hasChanges) {
+      // Update previous values regardless of animation state
       _prevBorderWidth = targetBorderWidth;
       _prevBorderRadius = targetBorderRadius;
-      _isFirstBuild = false;
+      _prevFirstDualColor = targetFirstDualColor;
+      _prevSecondDualColor = targetSecondDualColor;
+      _prevTrackDualColor = targetTrackDualColor;
 
-      _borderWidthAnim = AlwaysStoppedAnimation<double>(targetBorderWidth);
-      _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetBorderRadius);
-    } else if (hasChanges && animation != null) {
-      debugPrint("Starting animation for borderWidth and borderRadius");
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _setupAndStartAnimations(
-            targetBorderWidth, targetBorderRadius, animDuration, animCurve);
-      });
-    } else if (hasChanges) {
-      _prevBorderWidth = targetBorderWidth;
-      _prevBorderRadius = targetBorderRadius;
-
-      _borderWidthAnim = AlwaysStoppedAnimation<double>(targetBorderWidth);
-      _borderRadiusAnim = AlwaysStoppedAnimation<double>(targetBorderRadius);
+      if (_isFirstBuild) {
+        _isFirstBuild = false;
+        // Initialize animations with current values without transitions
+        _initializeAnimationsWithCurrentValues(
+            targetBorderWidth,
+            targetBorderRadius,
+            targetFirstDualColor,
+            targetSecondDualColor,
+            targetTrackDualColor);
+      } else if (animation != null) {
+        // Animate to new values
+        debugPrint("Starting animation for properties and colors");
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _setupAndStartAnimations(
+              targetBorderWidth,
+              targetBorderRadius,
+              targetFirstDualColor,
+              targetSecondDualColor,
+              targetTrackDualColor,
+              animDuration,
+              animCurve);
+        });
+      } else {
+        // Update values without animation
+        _initializeAnimationsWithCurrentValues(
+            targetBorderWidth,
+            targetBorderRadius,
+            targetFirstDualColor,
+            targetSecondDualColor,
+            targetTrackDualColor);
+      }
     }
 
     var contentCtrls =
@@ -179,9 +248,7 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
               color: Colors.transparent,
               borderRadius: borderRadiusObj,
             ),
-            child: child ??
-                const Text("Animated Border",
-                    style: TextStyle(color: Colors.black)),
+            child: child,
           );
 
           return constrainedControl(
@@ -190,15 +257,10 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
 
         Widget baseWidget;
 
-        // Choose border type based on borderType parameter
         if (borderType == "soft_gradient") {
-          // Use ZoAnimatedGradientBorder
           var smoothGradientColors = [...gradientColors];
 
-          // Fix for smooth gradient loop transition
           if (smoothGradientLoop && smoothGradientColors.length > 1) {
-            // For a smooth loop, add the first color at the end
-            // regardless of how many colors are in the list
             smoothGradientColors.add(smoothGradientColors[0]);
             debugPrint("Added first color to end for smooth gradient loop");
           }
@@ -215,25 +277,16 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
                 color: Colors.transparent,
                 borderRadius: borderRadiusObj,
               ),
-              child: child ??
-                  const Text("Gradient Border",
-                      style: TextStyle(color: Colors.black)),
+              child: child,
             ),
           );
         } else {
-          // Default to ZoDualBorder
           baseWidget = ZoDualBorder(
             duration: Duration(seconds: durationSeconds),
             glowOpacity: glowOpacity,
-            firstBorderColor:
-                widget.control.attrColor("firstDualColor", context) ??
-                    Colors.blue,
-            secondBorderColor:
-                widget.control.attrColor("secondDualColor", context) ??
-                    Colors.red,
-            trackBorderColor:
-                widget.control.attrColor("trackDualColor", context) ??
-                    Colors.grey,
+            firstBorderColor: _firstDualColorAnim.value ?? Colors.blue,
+            secondBorderColor: _secondDualColorAnim.value ?? Colors.red,
+            trackBorderColor: _trackDualColorAnim.value ?? Colors.grey,
             borderWidth: currentWidth,
             borderRadius: borderRadiusObj,
             child: Container(
@@ -242,9 +295,7 @@ class _FletAnimatedBorderControlState extends State<FletAnimatedBorderControl>
                 color: Colors.transparent,
                 borderRadius: borderRadiusObj,
               ),
-              child: child ??
-                  const Text("Dual Border",
-                      style: TextStyle(color: Colors.black)),
+              child: child,
             ),
           );
         }
